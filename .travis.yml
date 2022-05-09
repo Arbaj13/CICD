@@ -1,0 +1,23 @@
+sudo: required
+services: 
+  - docker
+before_install:
+  - docker build -t dockerci -f Dockerfile.dev
+
+script:
+  - docker run -e CI=true dockerci npm run test
+
+
+deploy:
+  provider: elasticbeanstalk
+  access_key_id: $ACCESS_KEY_ID
+  secret_access_key:
+    secure: "$SECRET_ACCESS_KEY"
+  region: "us-east-1"
+  app: "dockerci"
+  env: "Dockerci-env"
+  bucket_name: "elasticbeanstalk-us-east-1-359191135954"
+  bucket_path: "dockerci"
+
+  on:
+    branch: main
